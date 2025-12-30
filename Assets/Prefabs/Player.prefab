@@ -327,6 +327,11 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  maxHealth: 100
+  currentHealth: 0
+  healthSlider: {fileID: 0}
+  score: 0
+  scoreText: {fileID: 0}
   fallThreshold: -10
 --- !u!61 &8234542340311185999
 BoxCollider2D:
