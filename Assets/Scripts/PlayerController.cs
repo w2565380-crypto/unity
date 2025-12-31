@@ -19,6 +19,11 @@ public class PlayerController : MonoBehaviour
     public float currentHealth;
     public Slider healthSlider;
 
+    [Header("无敌设置")]
+    public float invincibilityDuration = 1f; // 1秒无敌时间
+    private float invincibilityTimer;
+    private bool isInvincible;
+
     [Header("得分设置")]
     public int score = 0;
     public Text scoreText;
@@ -28,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 startPosition;
 
     private Rigidbody2D rb;
+    private SpriteRenderer sr;
     private bool isGrounded;
     private bool canDoubleJump;
     private float moveInput;
@@ -35,9 +41,12 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
         rb.freezeRotation = true;
+
         startPosition = transform.position;
         currentHealth = maxHealth;
+
         UpdateHealthUI();
         UpdateScoreUI();
 
@@ -47,9 +56,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // 1. 移动输入
         moveInput = Input.GetAxisRaw("Horizontal");
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
 
+        // 2. 跳跃逻辑（含二段跳）
         if (Input.GetButtonDown("Jump"))
         {
             if (isGrounded)
@@ -64,12 +75,26 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        // 长按跳得高，短按跳得低
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * cutJumpModifier);
 
+        // 3. 翻转朝向
         if (moveInput > 0) transform.localScale = new Vector3(1, 1, 1);
         else if (moveInput < 0) transform.localScale = new Vector3(-1, 1, 1);
 
+        // 4. 处理无敌计时
+        if (invincibilityTimer > 0)
+        {
+            invincibilityTimer -= Time.deltaTime;
+            if (invincibilityTimer <= 0)
+            {
+                isInvincible = false;
+                sr.color = Color.white; // 恢复不透明
+            }
+        }
+
+        // 5. 坠崖检测
         if (transform.position.y < fallThreshold)
             Respawn();
     }
@@ -89,9 +114,17 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (isInvincible) return; // 无敌中不扣血
+
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdateHealthUI();
+
+        // 开启无敌效果
+        isInvincible = true;
+        invincibilityTimer = invincibilityDuration;
+        sr.color = new Color(1, 1, 1, 0.5f); // 变半透明
+
         if (currentHealth <= 0) Respawn();
     }
 
@@ -109,15 +142,8 @@ public class PlayerController : MonoBehaviour
         transform.position = startPosition;
         rb.velocity = Vector2.zero;
         currentHealth = maxHealth;
+        isInvincible = false;
+        sr.color = Color.white;
         UpdateHealthUI();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
-        }
     }
 }
