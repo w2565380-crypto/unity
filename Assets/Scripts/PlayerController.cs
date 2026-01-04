@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     public Slider healthSlider;
 
     [Header("无敌设置")]
-    public float invincibilityDuration = 1f; // 1秒无敌时间
+    public float invincibilityDuration = 1f;
     private float invincibilityTimer;
     private bool isInvincible;
 
@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private SpriteRenderer sr;
+    private Animator anim; // 动画控制器引用
     private bool isGrounded;
     private bool canDoubleJump;
     private float moveInput;
@@ -42,8 +43,9 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
-        rb.freezeRotation = true;
+        anim = GetComponent<Animator>(); // 获取动画组件
 
+        rb.freezeRotation = true;
         startPosition = transform.position;
         currentHealth = maxHealth;
 
@@ -56,7 +58,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // 1. 移动输入
+        // 1. 移动输入与地面检测
         moveInput = Input.GetAxisRaw("Horizontal");
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
 
@@ -75,7 +77,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 长按跳得高，短按跳得低
+        // 短跳优化
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * cutJumpModifier);
 
@@ -90,13 +92,16 @@ public class PlayerController : MonoBehaviour
             if (invincibilityTimer <= 0)
             {
                 isInvincible = false;
-                sr.color = Color.white; // 恢复不透明
+                sr.color = Color.white;
             }
         }
 
         // 5. 坠崖检测
         if (transform.position.y < fallThreshold)
             Respawn();
+
+        // 6. 核心：更新动画参数（传给动画师）
+        UpdateAnimations();
     }
 
     void FixedUpdate()
@@ -110,20 +115,34 @@ public class PlayerController : MonoBehaviour
         rb.velocity = Vector2.up * jumpForce;
     }
 
-    // --- 核心机制接口 ---
+    private void UpdateAnimations()
+    {
+        if (anim != null)
+        {
+            // speed: 大于0.1时切换跑步动画
+            anim.SetFloat("speed", Mathf.Abs(moveInput));
+
+            // grounded: 为false时播放跳跃/浮空动画
+            anim.SetBool("grounded", isGrounded);
+
+            // vSpeed: y轴垂直速度，用于判断是上升还是下落
+            anim.SetFloat("vSpeed", rb.velocity.y);
+        }
+    }
+
+    // --- 外部接口 ---
 
     public void TakeDamage(float damage)
     {
-        if (isInvincible) return; // 无敌中不扣血
+        if (isInvincible) return;
 
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdateHealthUI();
 
-        // 开启无敌效果
         isInvincible = true;
         invincibilityTimer = invincibilityDuration;
-        sr.color = new Color(1, 1, 1, 0.5f); // 变半透明
+        sr.color = new Color(1, 1, 1, 0.5f);
 
         if (currentHealth <= 0) Respawn();
     }
