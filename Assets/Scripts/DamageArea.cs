@@ -2,14 +2,18 @@ using UnityEngine;
 
 public class DamageArea : MonoBehaviour
 {
-    public float damageAmount = 10f;
+    public float damageAmount = 20f; // 每秒造成的伤害值
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        // 如果碰到的是玩家，且玩家身上有这个脚本
         if (collision.CompareTag("Player"))
         {
-            collision.GetComponent<PlayerController>().TakeDamage(damageAmount * Time.deltaTime);
+            PlayerController player = collision.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                // 注意：这里每秒扣除 damageAmount 点血
+                player.TakeDamage(damageAmount * Time.deltaTime);
+            }
         }
     }
 }
