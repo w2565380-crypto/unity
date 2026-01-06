@@ -19,6 +19,7 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
+        transform.localScale = new Vector3(2, 1, 1);
         if (Time.time >= nextAttackTime)
         {
             // 建议使用 Input.GetButtonDown("Fire1") 兼容鼠标左键，或者保持 KeyCode.J
@@ -28,6 +29,7 @@ public class PlayerAttack : MonoBehaviour
                 nextAttackTime = Time.time + 1f / attackRate;
             }
         }
+        transform.localScale = new Vector3(1, 1, 1);
     }
 
     void Attack()
