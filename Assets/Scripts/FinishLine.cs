@@ -1,23 +1,24 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // 必须引用这个命名空间
+using UnityEngine.SceneManagement;
 
 public class FinishLine : MonoBehaviour
 {
     [Header("设置")]
-    public string nextSceneName; // 下一个关卡的名称
-    public float delayTime = 1.5f; // 切换前的延迟时间（可以播放特效）
+    public string nextSceneName = "MenuScene"; // 默认设为你的主菜单场景名
+    public float delayTime = 1.5f;
 
     private bool isFinished = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // 确保是玩家触碰，且还没触发过
         if (collision.CompareTag("Player") && !isFinished)
         {
             isFinished = true;
-            Debug.Log("到达终点！准备进入下一关：" + nextSceneName);
+            Debug.Log("到达终点！即将返回关卡选择界面");
 
-            // 延迟加载，给玩家一点反馈时间
+            // --- 核心逻辑：设置返回主菜单后自动打开 LevelPanel ---
+            MainMenu.showLevelSelectOnStart = true;
+
             Invoke("LoadNextLevel", delayTime);
         }
     }
@@ -30,7 +31,8 @@ public class FinishLine : MonoBehaviour
         }
         else
         {
-            Debug.LogError("未设置下一个场景的名字！");
+            // 如果你忘记填名字，默认回主菜单
+            SceneManager.LoadScene("MenuScene");
         }
     }
 }
