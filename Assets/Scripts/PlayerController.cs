@@ -30,20 +30,22 @@ public class PlayerController : MonoBehaviour
 
     [Header("重生设置")]
     public float fallThreshold = -10f;
+    public float deathDelay = 1.5f; // 给死亡动画留出的时间
     private Vector3 startPosition;
 
     private Rigidbody2D rb;
     private SpriteRenderer sr;
-    private Animator anim; // 动画控制器引用
+    private Animator anim;
     private bool isGrounded;
     private bool canDoubleJump;
     private float moveInput;
+    private bool isDead = false; // 标记是否已死亡
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
-        anim = GetComponent<Animator>(); // 获取动画组件
+        anim = GetComponent<Animator>();
 
         rb.freezeRotation = true;
         startPosition = transform.position;
@@ -58,11 +60,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (isDead) return; // 死亡期间禁止任何输入控制
+
         // 1. 移动输入与地面检测
         moveInput = Input.GetAxisRaw("Horizontal");
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
 
-        // 2. 跳跃逻辑（含二段跳）
+        // 2. 跳跃逻辑
         if (Input.GetButtonDown("Jump"))
         {
             if (isGrounded)
@@ -77,7 +81,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 短跳优化
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * cutJumpModifier);
 
@@ -98,14 +101,15 @@ public class PlayerController : MonoBehaviour
 
         // 5. 坠崖检测
         if (transform.position.y < fallThreshold)
-            Respawn();
+            Die();
 
-        // 6. 核心：更新动画参数（传给动画师）
+        // 6. 更新动画参数
         UpdateAnimations();
     }
 
     void FixedUpdate()
     {
+        if (isDead) return;
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
     }
 
@@ -119,14 +123,10 @@ public class PlayerController : MonoBehaviour
     {
         if (anim != null)
         {
-            // speed: 大于0.1时切换跑步动画
             anim.SetFloat("speed", Mathf.Abs(moveInput));
-
-            // grounded: 为false时播放跳跃/浮空动画
             anim.SetBool("grounded", isGrounded);
-
-            // vSpeed: y轴垂直速度，用于判断是上升还是下落
             anim.SetFloat("vSpeed", rb.velocity.y);
+            anim.SetFloat("health", currentHealth);
         }
     }
 
@@ -134,17 +134,43 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (isInvincible) return;
+        if (isInvincible || isDead) return;
 
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdateHealthUI();
 
-        isInvincible = true;
-        invincibilityTimer = invincibilityDuration;
-        sr.color = new Color(1, 1, 1, 0.5f);
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            isInvincible = true;
+            invincibilityTimer = invincibilityDuration;
+            sr.color = new Color(1, 1, 1, 0.5f);
 
-        if (currentHealth <= 0) Respawn();
+            // 如果有受击动画，可以取消下面注释
+            // if(anim != null) anim.SetTrigger("hurt");
+        }
+    }
+
+    private void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+        moveInput = 0;
+        rb.velocity = Vector2.zero;
+        rb.simulated = false; // 死亡时关闭物理模拟，防止尸体乱动
+
+        if (anim != null)
+        {
+            anim.SetTrigger("die"); // 触发死亡动画
+        }
+
+        // 延迟调用复活逻辑
+        Invoke("Respawn", deathDelay);
     }
 
     public void AddScore(int amount)
@@ -158,15 +184,19 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
+        isDead = false;
+        rb.simulated = true;
         transform.position = startPosition;
         rb.velocity = Vector2.zero;
         currentHealth = maxHealth;
         isInvincible = false;
         sr.color = Color.white;
         UpdateHealthUI();
+
+        if (anim != null)
+        {
+            anim.SetTrigger("respawn"); // 触发复活/出生动画
+            anim.Rebind(); // 强制重置动画状态机
+        }
     }
 }
-
-
-
-
