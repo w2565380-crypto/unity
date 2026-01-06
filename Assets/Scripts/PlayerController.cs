@@ -85,8 +85,8 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * cutJumpModifier);
 
         // 3. 翻转朝向
-        if (moveInput > 0) transform.localScale = new Vector3(1, 1, 1);
-        else if (moveInput < 0) transform.localScale = new Vector3(-1, 1, 1);
+        if (moveInput > 0) transform.localScale = new Vector3(2, 1, 1);
+        else if (moveInput < 0) transform.localScale = new Vector3(-2, 1, 1);
 
         // 4. 处理无敌计时
         if (invincibilityTimer > 0)
