@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c56b62af869262d48a48898a24e918e8
+guid: 867cf9107cd695d42915fbe2e644b7c3
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 123_attack_0
+      name: 123_stay_64x128_0
       rect:
         serializedVersion: 2
         x: 0
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a36c0215e9056ec48a0e15ec76ee7f36
-      internalID: 2071977123
+      spriteID: 6aa9887860e72c441a49d09fefab9d6d
+      internalID: -993167957
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 123_attack_1
+      name: 123_stay_64x128_1
       rect:
         serializedVersion: 2
         x: 128
@@ -145,14 +145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b9590f0e22541c545a794eeb075e0b12
-      internalID: -1178984644
+      spriteID: eda130a2388f4b34e910427e19c100ba
+      internalID: 461102722
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 123_attack_2
+      name: 123_stay_64x128_2
       rect:
         serializedVersion: 2
         x: 256
@@ -166,14 +166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62cb1cb943a4d9745bfb15c11a19e144
-      internalID: -1697542566
+      spriteID: d605567f807561648be6785cc3bc39de
+      internalID: 2030386189
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 123_attack_3
+      name: 123_stay_64x128_3
       rect:
         serializedVersion: 2
         x: 384
@@ -187,17 +187,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d3823d7aa793dc04daefd6f484827f76
-      internalID: -2022549270
+      spriteID: eb46fbc65ebf4064aa26641d974970cb
+      internalID: -2065710832
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 123_attack_4
+      name: 123_stay_64x128_4
       rect:
         serializedVersion: 2
-        x: 512
+        x: 513
         y: 0
         width: 128
         height: 64
@@ -208,14 +208,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 018011d73c88d6a4db737b944716e6cb
-      internalID: 105783862
+      spriteID: 893372a2a00bf48468a84749a70134e4
+      internalID: 1455181158
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 123_attack_5
+      name: 123_stay_64x128_5
       rect:
         serializedVersion: 2
         x: 640
@@ -229,92 +229,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9a44e5d4dce98e441b9c7c54d4ab44b5
-      internalID: 1526241912
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: 123_attack_6
-      rect:
-        serializedVersion: 2
-        x: 768
-        y: 0
-        width: 128
-        height: 64
-      alignment: 9
-      pivot: {x: 0.25, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3477c263119688a43900c87175e874b1
-      internalID: 1653872094
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: 123_attack_7
-      rect:
-        serializedVersion: 2
-        x: 896
-        y: 0
-        width: 128
-        height: 64
-      alignment: 9
-      pivot: {x: 0.25, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5d653805a5c80eb489301505300f9a70
-      internalID: -1517590488
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: 123_attack_8
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 128
-        height: 64
-      alignment: 9
-      pivot: {x: 0.25, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d236657e0efbfb74a8896b79e4b95f73
-      internalID: 769949021
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: 123_attack_9
-      rect:
-        serializedVersion: 2
-        x: 1152
-        y: 0
-        width: 128
-        height: 64
-      alignment: 9
-      pivot: {x: 0.25, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 09a50570eedf7c14383bc0bac111b214
-      internalID: 1011738493
+      spriteID: 2957852587202b44388239fe6ebf33b7
+      internalID: 362940723
       vertices: []
       indices: 
       edges: []
@@ -330,16 +246,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      123_attack_0: 2071977123
-      123_attack_1: -1178984644
-      123_attack_2: -1697542566
-      123_attack_3: -2022549270
-      123_attack_4: 105783862
-      123_attack_5: 1526241912
-      123_attack_6: 1653872094
-      123_attack_7: -1517590488
-      123_attack_8: 769949021
-      123_attack_9: 1011738493
+      123_stay_64x128_0: -993167957
+      123_stay_64x128_1: 461102722
+      123_stay_64x128_2: 2030386189
+      123_stay_64x128_3: -2065710832
+      123_stay_64x128_4: 1455181158
+      123_stay_64x128_5: 362940723
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -45,6 +45,6 @@ public class PauseMenu : MonoBehaviour
     public void LoadMenu()
     {
         Time.timeScale = 1f;          // 非常重要：回到菜单前必须恢复时间，否则菜单也是卡死的
-        SceneManager.LoadScene("MenuScene"); // 替换为你主菜单场景的名字
+        SceneManager.LoadScene("Start"); // 替换为你主菜单场景的名字
     }
 }
