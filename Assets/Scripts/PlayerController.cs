@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("重生设置")]
     public float fallThreshold = -10f;
-    public float deathDelay = 1.5f; // 给死亡动画留出的时间
+    public float deathDelay = 1.5f;
     private Vector3 startPosition;
 
     private Rigidbody2D rb;
@@ -39,7 +39,10 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool canDoubleJump;
     private float moveInput;
-    private bool isDead = false; // 标记是否已死亡
+    private bool isDead = false;
+
+    // --- 新增：用于锁定朝向的变量 ---
+    private float lastFacingDir = 1f;
 
     void Start()
     {
@@ -60,11 +63,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (isDead) return; // 死亡期间禁止任何输入控制
+        if (isDead) return;
 
         // 1. 移动输入与地面检测
         moveInput = Input.GetAxisRaw("Horizontal");
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+
+        // --- 核心修改：更新记录的方向 ---
+        if (moveInput > 0) lastFacingDir = 1f;
+        else if (moveInput < 0) lastFacingDir = -1f;
 
         // 2. 跳跃逻辑
         if (Input.GetButtonDown("Jump"))
@@ -84,11 +91,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * cutJumpModifier);
 
-        // 3. 翻转朝向
-        if (moveInput > 0) transform.localScale = new Vector3(1, 1, 1);
-        else if (moveInput < 0) transform.localScale = new Vector3(-1, 1, 1);
-
-        // 4. 处理无敌计时
+        // 3. 处理无敌计时
         if (invincibilityTimer > 0)
         {
             invincibilityTimer -= Time.deltaTime;
@@ -99,12 +102,20 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 5. 坠崖检测
+        // 4. 坠崖检测
         if (transform.position.y < fallThreshold)
             Die();
 
-        // 6. 更新动画参数
+        // 5. 更新动画参数
         UpdateAnimations();
+    }
+
+    // --- 核心修改：在 LateUpdate 中强制锁定缩放 ---
+    // LateUpdate 在所有动画计算之后执行，可以确保覆盖 Animator 的自动重置
+    void LateUpdate()
+    {
+        if (isDead) return;
+        transform.localScale = new Vector3(lastFacingDir, 1f, 1f);
     }
 
     void FixedUpdate()
@@ -130,8 +141,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // --- 外部接口 ---
-
     public void TakeDamage(float damage)
     {
         if (isInvincible || isDead) return;
@@ -149,9 +158,6 @@ public class PlayerController : MonoBehaviour
             isInvincible = true;
             invincibilityTimer = invincibilityDuration;
             sr.color = new Color(1, 1, 1, 0.5f);
-
-            // 如果有受击动画，可以取消下面注释
-            // if(anim != null) anim.SetTrigger("hurt");
         }
     }
 
@@ -162,14 +168,13 @@ public class PlayerController : MonoBehaviour
         isDead = true;
         moveInput = 0;
         rb.velocity = Vector2.zero;
-        rb.simulated = false; // 死亡时关闭物理模拟，防止尸体乱动
+        rb.simulated = false;
 
         if (anim != null)
         {
-            anim.SetTrigger("die"); // 触发死亡动画
+            anim.SetTrigger("die");
         }
 
-        // 延迟调用复活逻辑
         Invoke("Respawn", deathDelay);
     }
 
@@ -191,12 +196,13 @@ public class PlayerController : MonoBehaviour
         currentHealth = maxHealth;
         isInvincible = false;
         sr.color = Color.white;
+        lastFacingDir = 1f; // 重生时默认面向右
         UpdateHealthUI();
 
         if (anim != null)
         {
-            anim.SetTrigger("respawn"); // 触发复活/出生动画
-            anim.Rebind(); // 强制重置动画状态机
+            anim.SetTrigger("respawn");
+            anim.Rebind();
         }
     }
 }
